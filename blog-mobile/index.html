@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#14264a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg">
+<title>블로그 포스팅</title>
+<style>
+:root{--navy:#14264a;--navy2:#1d3562;--amber:#f5a623;--bg:#f4f1ea;--card:#fff;--ink:#1b2438;--mute:#6b7487;--line:#e2ddd0;--ok:#2e7d4f;--warn:#c0392b}
+@media (prefers-color-scheme:dark){:root{--bg:#0e1730;--card:#17223f;--ink:#eef0f6;--mute:#9aa4bd;--line:#2a3860}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;padding-bottom:calc(88px + env(safe-area-inset-bottom))}
+header{background:var(--navy);color:#fff;padding:calc(14px + env(safe-area-inset-top)) 16px 12px;position:sticky;top:0;z-index:5}
+header h1{margin:0;font-size:17px}
+header small{color:#b9c4e0;font-size:12px}
+.steps{display:flex;gap:6px;margin-top:10px}
+.steps i{flex:1;height:4px;border-radius:2px;background:#33497a}
+.steps i.on{background:var(--amber)}
+main{padding:16px;max-width:640px;margin:auto}
+section{display:none}section.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+h2{font-size:18px;margin:0 0 10px}
+label{display:block;font-size:13px;color:var(--mute);margin:12px 0 4px}
+input,select,textarea{width:100%;font:inherit;color:inherit;background:transparent;border:1px solid var(--line);border-radius:10px;padding:12px}
+textarea{min-height:240px;resize:vertical;line-height:1.55}
+button{font:inherit;border:0;border-radius:12px;padding:13px 16px;min-height:48px;background:var(--navy);color:#fff;font-weight:600}
+button.amber{background:var(--amber);color:var(--navy)}
+button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.chip{background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:13px}
+.check{display:flex;gap:8px;font-size:14px;padding:4px 0}
+.check b{flex:none;width:18px}.ok b{color:var(--ok)}.bad b{color:var(--warn)}
+.hint{font-size:13px;color:var(--mute)}
+pre.p{white-space:pre-wrap;background:var(--bg);border-radius:10px;padding:12px;font-size:13px;max-height:200px;overflow:auto}
+.copyrow{display:flex;align-items:center;gap:8px;margin:8px 0}
+.copyrow div{flex:1;min-width:0;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.copyrow button{flex:none;min-height:40px;padding:8px 14px}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;gap:8px;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:var(--card);border-top:1px solid var(--line)}
+nav button{flex:1}
+#toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#000c;color:#fff;padding:8px 16px;border-radius:999px;font-size:14px;opacity:0;transition:.2s;pointer-events:none}
+#toast.on{opacity:1}
+.prev{font-size:15px}.prev table{border-collapse:collapse;width:100%;font-size:13px}.prev td,.prev th{border:1px solid var(--line);padding:4px 6px}.prev blockquote{margin:8px 0;padding:4px 12px;border-left:3px solid var(--amber);color:var(--mute)}
+</style>
+</head>
+<body>
+<header><h1>연필 차장의 행복 계산 일지</h1><small>모바일 포스팅 · 비공개 초안용</small><div class="steps"><i></i><i></i><i></i></div></header>
+<main>
+<section id="s0">
+ <div class="card"><h2>1. 소재와 카테고리</h2>
+  <label>소재</label><input id="topic" placeholder="예: IRP 먼저 넣어야 할까">
+  <label>카테고리</label>
+  <select id="cat"></select>
+  <div class="hint" id="catHint"></div>
+  <label>메모 (선택)</label><textarea id="memo" style="min-height:80px" placeholder="꼭 넣고 싶은 관점이나 숫자"></textarea>
+ </div>
+ <div class="card"><h2>Claude에게 글 맡기기</h2>
+  <p class="hint">아래 요청문을 복사해 폰의 Claude 앱에 붙여 넣으면 /블로그 스킬이 사실확인·본문·이미지까지 만듭니다. 완성된 본문을 다음 단계에 붙여 넣으세요.</p>
+  <pre class="p" id="prompt"></pre>
+  <div class="row"><button class="amber" onclick="copy($('#prompt').textContent,'요청문 복사됨')">요청문 복사</button><button class="ghost" onclick="openClaude()">Claude 앱 열기</button></div>
+ </div>
+</section>
+<section id="s1">
+ <div class="card"><h2>2. 본문 붙여넣기</h2>
+  <label>제목</label><input id="title" placeholder="질문 + 답 암시형 (100자 이내)">
+  <label>본문 (마크다운)</label><textarea id="body" placeholder="Claude가 만든 본문을 붙여 넣으세요. 제목(#)은 빼도 됩니다."></textarea>
+  <div class="row" style="margin-top:8px"><button class="ghost" onclick="pasteBody()">클립보드에서 붙여넣기</button><button class="ghost" onclick="autoMeta()">제목·태그 자동 추출</button></div>
+  <label>태그 (10개, 쉼표 구분)</label><input id="tags" placeholder="IRP,연금저축,ISA,...">
+  <div class="chips" id="tagChips"></div>
+ </div>
+ <div class="card"><h2>발행 전 점검</h2><div id="checks"></div></div>
+</section>
+<section id="s2">
+ <div class="card"><h2>3. 네이버 블로그 앱에 올리기</h2>
+  <p class="hint">공개 범위는 항상 <b>비공개</b>로 저장하세요. 확인 후 직접 공개로 바꿉니다.</p>
+  <div class="copyrow"><div id="cTitle"></div><button onclick="copy($('#title').value,'제목 복사됨')">제목</button></div>
+  <div class="copyrow"><div id="cBody"></div><button onclick="copyRich()">본문</button></div>
+  <div class="copyrow"><div id="cTags"></div><button onclick="copy(tagList().map(t=>'#'+t).join(' '),'태그 복사됨')">태그</button></div>
+  <button class="amber" style="width:100%;margin-top:8px" onclick="openNaver()">네이버 블로그 앱 열기</button>
+  <ol class="hint" style="padding-left:20px">
+   <li>앱에서 글쓰기 → 카테고리: <b id="catName"></b></li>
+   <li>제목·본문·태그를 차례로 붙여넣기 (본문은 서식 포함으로 복사됩니다)</li>
+   <li>이미지(썸네일, 비교, 판단 그래프)는 사진에서 직접 삽입</li>
+   <li>발행 설정 → <b>비공개</b> → 저장</li>
+  </ol>
+ </div>
+ <div class="card"><h2>미리보기</h2><div class="prev" id="prev"></div></div>
+ <button class="ghost" style="width:100%" onclick="reset()">새 글 시작 (임시저장 삭제)</button>
+</section>
+</main>
+<nav><button class="ghost" id="back" onclick="go(-1)">이전</button><button id="next" onclick="go(1)">다음</button></nav>
+<div id="toast"></div>
+<script>
+const $=s=>document.querySelector(s);
+const CATS={"연금, 절세":"IRP·연금저축·ISA·세제","노후 계산":"은퇴·퇴직·국민연금·대출·가계 계산","아빠 육아휴직":"육아휴직 가계","캐나다 1년 살기":"해외 생활","아들과 축구":"유소년 축구 성장·비용 이야기"};
+const KEY='blogMobileDraft';let step=0;
+const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+function save(){try{localStorage.setItem(KEY,JSON.stringify({topic:$('#topic').value,cat:$('#cat').value,memo:$('#memo').value,title:$('#title').value,body:$('#body').value,tags:$('#tags').value,step}))}catch(e){}}
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY)||'{}');for(const k of['topic','memo','title','body','tags'])if(d[k])$('#'+k).value=d[k];if(d.cat)$('#cat').value=d.cat;step=d.step||0}catch(e){}}
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1600)}
+async function copy(t,m){try{await navigator.clipboard.writeText(t)}catch(e){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove()}toast(m||'복사됨')}
+function tagList(){return $('#tags').value.split(/[,\s#]+/).filter(Boolean).slice(0,10)}
+function inline(s){return esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\*(.+?)\*/g,'<i>$1</i>').replace(/\[([^\]]+)\]\((https?:[^)]+)\)/g,'<a href="$2">$1</a>')}
+function md(src){const L=src.replace(/\r/g,'').split('\n'),o=[];let i=0;
+ while(i<L.length){const l=L[i];
+  if(/^\s*$/.test(l)){i++;continue}
+  let m;
+  if(m=l.match(/^(#{1,4})\s+(.*)/)){const n=Math.min(m[1].length+1,4);o.push(`<h${n}>${inline(m[2])}</h${n}>`);i++}
+  else if(/^---+\s*$/.test(l)){o.push('<hr>');i++}
+  else if(/^>/.test(l)){const b=[];while(i<L.length&&/^>/.test(L[i]))b.push(inline(L[i++].replace(/^>\s?/,'')));o.push(`<blockquote>${b.join('<br>')}</blockquote>`)}
+  else if(/^\|/.test(l)){const r=[];while(i<L.length&&/^\|/.test(L[i]))r.push(L[i++]);const rows=r.filter(x=>!/^\|[\s:|-]+\|?\s*$/.test(x)).map(x=>x.replace(/^\||\|\s*$/g,'').split('|').map(c=>c.trim()));
+   o.push('<table>'+rows.map((c,k)=>'<tr>'+c.map(v=>`<${k?'td':'th'}>${inline(v)}</${k?'td':'th'}>`).join('')+'</tr>').join('')+'</table>')}
+  else if(/^\s*([-*]|\d+\.)\s+/.test(l)){const ord=/^\s*\d+\./.test(l),b=[];while(i<L.length&&/^\s*([-*]|\d+\.)\s+/.test(L[i]))b.push(`<li>${inline(L[i++].replace(/^\s*([-*]|\d+\.)\s+/,''))}</li>`);o.push(`<${ord?'ol':'ul'}>${b.join('')}</${ord?'ol':'ul'}>`)}
+  else{const p=[];while(i<L.length&&!/^\s*$/.test(L[i])&&!/^(#|>|\||---)/.test(L[i]))p.push(inline(L[i++]));o.push(`<p>${p.join('<br>')}</p>`)}}
+ return o.join('')}
+function bodyText(){return $('#body').value.replace(/^#\s+.*\n+/,'')}
+async function copyRich(){const html=md(bodyText()),txt=bodyText();
+ try{await navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([html],{type:'text/html'}),'text/plain':new Blob([txt],{type:'text/plain'})})]);toast('본문 복사됨 (서식 포함)')}catch(e){copy(txt,'본문 복사됨 (텍스트)')}}
+async function pasteBody(){try{$('#body').value=await navigator.clipboard.readText();onBody()}catch(e){toast('붙여넣기 권한이 없습니다. 직접 붙여 넣어 주세요')}}
+function autoMeta(){const b=$('#body').value,h=b.match(/^#\s+(.+)/m);if(h&&!$('#title').value)$('#title').value=h[1].trim();
+ const t=b.match(/^(?:#+\s*)?태그[:\s]*\n?([^\n]+)/m);if(t&&!$('#tags').value)$('#tags').value=t[1].replace(/#/g,'').trim().split(/[\s,]+/).join(',');
+ onBody();toast('추출 완료')}
+function checks(){const b=$('#body').value,t=$('#title').value,tg=tagList(),r=[];
+ const add=(ok,m)=>r.push(`<div class="check ${ok?'ok':'bad'}"><b>${ok?'✓':'✗'}</b><span>${m}</span></div>`);
+ add(t.length>0&&t.length<=100,`제목 ${t.length}자 (100자 이내)`);
+ add(tg.length===10,`태그 ${tg.length}/10개`);
+ add(b.length>0&&b.length<=30000,`본문 ${b.length.toLocaleString()}자 (3만 자 이내)`);
+ add(/##\s*3줄 결론/.test(b),'3줄 결론 섹션');
+ add(/##\s*FAQ/i.test(b)&&(b.match(/\*\*Q\./g)||[]).length>=5,'FAQ 5개 이상');
+ add(/##\s*출처/.test(b),'출처 섹션');
+ add(/개인 의견이며/.test(b),'고지문');
+ add(!/- \[[ x]\]/.test(b),'체크박스 없음 (네이버에서 깨짐)');
+ add(!/오늘은 .*알아보겠습니다|정리해 보겠습니다|여러분도 확인해보세요/.test(b),'금지 표현 없음');
+ add(!/[\u{1F300}-\u{1FAFF}☀-➿]/u.test(b),'이모지 없음');
+ $('#checks').innerHTML=r.join('')}
+function onBody(){checks();$('#tagChips').innerHTML=tagList().map(t=>`<span class="chip">#${esc(t)}</span>`).join('');save()}
+function buildPrompt(){const t=$('#topic').value.trim(),c=$('#cat').value,m=$('#memo').value.trim();
+ $('#prompt').textContent=`/블로그 ${t||'[소재]'} ${c}`+(m?`\n\n참고: ${m}`:'')+`\n\n모바일에서 올릴 거라 업리카 업로드는 건너뛰고, 제목·본문(마크다운)·태그 10개·SEO 키워드를 한 번에 정리해서 줘.`;
+ $('#catHint').textContent=CATS[c]?`글감: ${CATS[c]}`:'';save()}
+function openClaude(){location.href='https://claude.ai/new?q='+encodeURIComponent($('#prompt').textContent)}
+function openNaver(){const t=Date.now();location.href='naversearchapp://';location.href='naverblog://';setTimeout(()=>{if(Date.now()-t<2500)location.href='https://m.blog.naver.com/'},1200)}
+function view(){document.querySelectorAll('section').forEach((s,i)=>s.classList.toggle('on',i===step));
+ document.querySelectorAll('.steps i').forEach((e,i)=>e.classList.toggle('on',i<=step));
+ $('#back').style.display=step?'':'none';$('#next').style.display=step===2?'none':'';
+ if(step===2){$('#cTitle').textContent=$('#title').value||'(제목 없음)';$('#cBody').textContent=bodyText().slice(0,60)+'…';$('#cTags').textContent=tagList().map(t=>'#'+t).join(' ');$('#catName').textContent=$('#cat').value;$('#prev').innerHTML=md(bodyText())}
+ if(step===1)checks();save();scrollTo(0,0)}
+function go(d){if(step===1&&d>0&&!$('#body').value.trim()){toast('본문을 먼저 붙여 넣어 주세요');return}step=Math.max(0,Math.min(2,step+d));view()}
+function reset(){if(confirm('임시저장 내용을 지울까요?')){try{localStorage.removeItem(KEY)}catch(e){}location.reload()}}
+$('#cat').innerHTML=Object.keys(CATS).map(c=>`<option>${c}</option>`).join('');
+load();buildPrompt();onBody();view();
+['topic','cat','memo'].forEach(i=>$('#'+i).addEventListener('input',buildPrompt));
+['title','body','tags'].forEach(i=>$('#'+i).addEventListener('input',onBody));
+if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>

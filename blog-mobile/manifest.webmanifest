@@ -1,0 +1,9 @@
+{
+  "name": "연필 차장 블로그 포스팅",
+  "short_name": "블로그 포스팅",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#14264a",
+  "theme_color": "#14264a",
+  "icons": [{"src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable"}]
+}
