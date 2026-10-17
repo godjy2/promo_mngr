@@ -40,6 +40,8 @@ pre.p{white-space:pre-wrap;background:var(--bg);border-radius:10px;padding:12px;
 .copyrow button{flex:none;min-height:40px;padding:8px 14px}
 nav{position:fixed;left:0;right:0;bottom:0;display:flex;gap:8px;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:var(--card);border-top:1px solid var(--line)}
 nav button{flex:1}
+.thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.thumbs div{position:relative;width:72px;height:72px}.thumbs img{width:100%;height:100%;object-fit:cover;border-radius:10px;border:1px solid var(--line)}.thumbs b{position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;background:var(--navy);color:#fff;font-size:13px;line-height:22px;text-align:center}
+.chip.btn{cursor:pointer;padding:6px 12px}
 #toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#000c;color:#fff;padding:8px 16px;border-radius:999px;font-size:14px;opacity:0;transition:.2s;pointer-events:none}
 #toast.on{opacity:1}
 .prev{font-size:15px}.prev table{border-collapse:collapse;width:100%;font-size:13px}.prev td,.prev th{border:1px solid var(--line);padding:4px 6px}.prev blockquote{margin:8px 0;padding:4px 12px;border-left:3px solid var(--amber);color:var(--mute)}
@@ -49,15 +51,28 @@ nav button{flex:1}
 <header><h1>연필 차장의 행복 계산 일지</h1><small>모바일 포스팅 · 비공개 초안용</small><div class="steps"><i></i><i></i><i></i></div></header>
 <main>
 <section id="s0">
- <div class="card"><h2>1. 소재와 카테고리</h2>
-  <label>소재</label><input id="topic" placeholder="예: IRP 먼저 넣어야 할까">
+ <div class="card"><h2>오늘의 주제 추천</h2>
   <label>카테고리</label>
   <select id="cat"></select>
   <div class="hint" id="catHint"></div>
+  <div class="row" style="margin-top:10px"><button class="amber" onclick="copy(recPrompt(),'추천 요청문 복사됨')">Claude 추천 요청문 복사</button><button class="ghost" onclick="openClaude(recPrompt())">Claude 앱에서 추천받기</button></div>
+  <label>직접 검색해서 이슈 찾기</label>
+  <div class="row"><button class="ghost" onclick="searchNaver('m_news')">최근 뉴스</button><button class="ghost" onclick="searchNaver('m_blog')">인기 블로그글</button><button class="ghost" onclick="window.open('https://datalab.naver.com/','_blank')">데이터랩</button></div>
+  <label>주제 아이디어 (누르면 소재에 채워집니다)</label>
+  <div class="chips" id="ideas"></div>
+ </div>
+ <div class="card"><h2>1. 소재</h2>
+  <label>소재</label><input id="topic" placeholder="예: IRP 먼저 넣어야 할까">
   <label>메모 (선택)</label><textarea id="memo" style="min-height:80px" placeholder="꼭 넣고 싶은 관점이나 숫자"></textarea>
  </div>
+ <div class="card"><h2>참고 사진 (선택)</h2>
+  <p class="hint">영수증·화면 캡처 등 글에 참고할 사진입니다. 이 기기에만 저장됩니다. Claude 앱에는 '공유'로 보내세요.</p>
+  <input type="file" id="photoIn" accept="image/*" multiple hidden>
+  <div class="row"><button class="ghost" onclick="$('#photoIn').click()">사진 추가</button><button class="ghost" onclick="sharePhotos()">Claude 앱으로 공유</button></div>
+  <div class="thumbs" id="thumbs"></div>
+ </div>
  <div class="card"><h2>Claude에게 글 맡기기</h2>
-  <p class="hint">아래 요청문을 복사해 폰의 Claude 앱에 붙여 넣으면 /블로그 스킬이 사실확인·본문·이미지까지 만듭니다. 완성된 본문을 다음 단계에 붙여 넣으세요.</p>
+  <p class="hint">아래 요청문을 복사해 폰의 Claude 앱에 붙여 넣으면 /블로그 스킬이 사실확인·본문·이미지까지 만듭니다. 사진은 공유로 함께 보내세요. 완성된 본문을 다음 단계에 붙여 넣으세요.</p>
   <pre class="p" id="prompt"></pre>
   <div class="row"><button class="amber" onclick="copy($('#prompt').textContent,'요청문 복사됨')">요청문 복사</button><button class="ghost" onclick="openClaude()">Claude 앱 열기</button></div>
  </div>
@@ -95,6 +110,7 @@ nav button{flex:1}
 <script>
 const $=s=>document.querySelector(s);
 const CATS={"연금, 절세":"IRP·연금저축·ISA·세제","노후 계산":"은퇴·퇴직·국민연금·대출·가계 계산","아빠 육아휴직":"육아휴직 가계","캐나다 1년 살기":"해외 생활","아들과 축구":"유소년 축구 성장·비용 이야기"};
+const IDEAS={"연금, 절세":["IRP 먼저 넣어야 할까","연금저축 vs ISA, 어디부터","연말정산 세액공제 한도 점검","ISA 만기 후 연금계좌 이전"],"노후 계산":["국민연금 수령 시기, 당길까 늦출까","주담대 상환 vs 연금 납입","40대 외벌이 노후 월 생활비 계산","퇴직연금 DC 운용 점검"],"아빠 육아휴직":["육아휴직 급여, 월 얼마 받나","아빠 육아휴직 통보 순서","휴직 중 가계부 계산"],"캐나다 1년 살기":["해외 1년 살기 생활비 예산표","환율 변동에 따른 해외 체류 예산"],"아들과 축구":["유소년 축구 1년 비용 계산","축구 장비값 가계부","성장기 간식·영양 비용"]};
 const KEY='blogMobileDraft';let step=0;
 const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 function save(){try{localStorage.setItem(KEY,JSON.stringify({topic:$('#topic').value,cat:$('#cat').value,memo:$('#memo').value,title:$('#title').value,body:$('#body').value,tags:$('#tags').value,step}))}catch(e){}}
@@ -136,10 +152,23 @@ function checks(){const b=$('#body').value,t=$('#title').value,tg=tagList(),r=[]
  add(!/[\u{1F300}-\u{1FAFF}☀-➿]/u.test(b),'이모지 없음');
  $('#checks').innerHTML=r.join('')}
 function onBody(){checks();$('#tagChips').innerHTML=tagList().map(t=>`<span class="chip">#${esc(t)}</span>`).join('');save()}
-function buildPrompt(){const t=$('#topic').value.trim(),c=$('#cat').value,m=$('#memo').value.trim();
- $('#prompt').textContent=`/블로그 ${t||'[소재]'} ${c}`+(m?`\n\n참고: ${m}`:'')+`\n\n모바일에서 올릴 거라 업리카 업로드는 건너뛰고, 제목·본문(마크다운)·태그 10개·SEO 키워드를 한 번에 정리해서 줘.`;
+function buildPrompt(){renderIdeas();const t=$('#topic').value.trim(),c=$('#cat').value,m=$('#memo').value.trim();
+ $('#prompt').textContent=`/블로그 ${t||'[소재]'} ${c}`+(m?`\n\n참고: ${m}`:'')+(photos.length?`\n\n참고 사진 ${photos.length}장을 함께 첨부했어. 글 근거로 참고해 줘.`:'')+`\n\n모바일에서 올릴 거라 업리카 업로드는 건너뛰고, 제목·본문(마크다운)·태그 10개·SEO 키워드를 한 번에 정리해서 줘.`;
  $('#catHint').textContent=CATS[c]?`글감: ${CATS[c]}`:'';save()}
-function openClaude(){location.href='https://claude.ai/new?q='+encodeURIComponent($('#prompt').textContent)}
+function recPrompt(){const c=$('#cat').value;return `/블로그 오늘의 주제 추천 ${c}\n\n업리카 list_channel_posts로 기존 글을 보고 겹치지 않게, 최근 이슈를 검색해서 오늘의 주제 1개 + 후보 2개를 추천해 줘. 각 주제에 검색자가 칠 만한 제목 예시와 '계산' 각도를 한 줄씩 붙여 줘. 글은 내가 고른 뒤에 써 줘.`}
+function openClaude(t){location.href='https://claude.ai/new?q='+encodeURIComponent(t||$('#prompt').textContent)}
+function searchNaver(w){const d=new Date(),k=($('#cat').value.split(/[,\s]+/)[0]||'')+' '+d.getFullYear()+'년 '+(d.getMonth()+1)+'월';window.open('https://m.search.naver.com/search.naver?where='+w+'&query='+encodeURIComponent(k),'_blank')}
+function renderIdeas(){const l=IDEAS[$('#cat').value]||[];$('#ideas').innerHTML=l.map((t,i)=>`<span class="chip btn" data-i="${i}">${esc(t)}</span>`).join('');$('#ideas').querySelectorAll('.chip').forEach(e=>e.onclick=()=>{$('#topic').value=l[e.dataset.i];buildPrompt();toast('소재에 채웠습니다')})}
+/* 참고 사진: IndexedDB에 축소본 저장 */
+let photos=[];
+const idb=()=>new Promise((res,rej)=>{const r=indexedDB.open('blogMobile',1);r.onupgradeneeded=()=>r.result.createObjectStore('photos',{keyPath:'id'});r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
+async function dbDo(mode,fn){try{const d=await idb();return await new Promise((res,rej)=>{const t=d.transaction('photos',mode),s=t.objectStore('photos'),r=fn(s);t.oncomplete=()=>res(r&&r.result);t.onerror=()=>rej(t.error)})}catch(e){return null}}
+function shrink(f){return new Promise(res=>{const im=new Image(),u=URL.createObjectURL(f);im.onload=()=>{const m=1280,k=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);c.toBlob(b=>res(b),'image/jpeg',.85)};im.onerror=()=>res(null);im.src=u})}
+async function loadPhotos(){photos=(await dbDo('readonly',s=>s.getAll()))||[];photos.sort((a,b)=>a.id-b.id);renderPhotos()}
+function renderPhotos(){buildPrompt();$('#thumbs').innerHTML=photos.map(p=>`<div><img src="${URL.createObjectURL(p.blob)}"><b data-id="${p.id}">×</b></div>`).join('');$('#thumbs').querySelectorAll('b').forEach(b=>b.onclick=async()=>{await dbDo('readwrite',s=>s.delete(+b.dataset.id));loadPhotos()})}
+async function addPhotos(files){for(const f of files){const b=await shrink(f);if(b)await dbDo('readwrite',s=>s.put({id:Date.now()+Math.random(),name:'ref'+(photos.length+1)+'.jpg',blob:b}))}loadPhotos()}
+async function sharePhotos(){if(!photos.length){toast('사진을 먼저 추가하세요');return}const fs=photos.map((p,i)=>new File([p.blob],'ref'+(i+1)+'.jpg',{type:'image/jpeg'}));
+ if(navigator.canShare&&navigator.canShare({files:fs})){try{await navigator.share({files:fs,text:$('#prompt').textContent})}catch(e){}}else toast('이 브라우저는 사진 공유를 지원하지 않습니다. Claude 앱에서 직접 첨부하세요')}
 function openNaver(){const t=Date.now();location.href='naversearchapp://';location.href='naverblog://';setTimeout(()=>{if(Date.now()-t<2500)location.href='https://m.blog.naver.com/'},1200)}
 function view(){document.querySelectorAll('section').forEach((s,i)=>s.classList.toggle('on',i===step));
  document.querySelectorAll('.steps i').forEach((e,i)=>e.classList.toggle('on',i<=step));
@@ -149,7 +178,7 @@ function view(){document.querySelectorAll('section').forEach((s,i)=>s.classList.
 function go(d){if(step===1&&d>0&&!$('#body').value.trim()){toast('본문을 먼저 붙여 넣어 주세요');return}step=Math.max(0,Math.min(2,step+d));view()}
 function reset(){if(confirm('임시저장 내용을 지울까요?')){try{localStorage.removeItem(KEY)}catch(e){}location.reload()}}
 $('#cat').innerHTML=Object.keys(CATS).map(c=>`<option>${c}</option>`).join('');
-load();buildPrompt();onBody();view();
+load();buildPrompt();loadPhotos();$('#photoIn').addEventListener('change',e=>{addPhotos([...e.target.files]);e.target.value=''});onBody();view();
 ['topic','cat','memo'].forEach(i=>$('#'+i).addEventListener('input',buildPrompt));
 ['title','body','tags'].forEach(i=>$('#'+i).addEventListener('input',onBody));
 if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
