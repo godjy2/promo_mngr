@@ -6,118 +6,66 @@
 <meta name="theme-color" content="#14264a">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg">
-<title>블로그 포스팅</title>
+<title>블로그 올리기</title>
 <style>
-:root{--navy:#14264a;--navy2:#1d3562;--amber:#f5a623;--bg:#f4f1ea;--card:#fff;--ink:#1b2438;--mute:#6b7487;--line:#e2ddd0;--ok:#2e7d4f;--warn:#c0392b}
+:root{--navy:#14264a;--amber:#f5a623;--bg:#f4f1ea;--card:#fff;--ink:#1b2438;--mute:#6b7487;--line:#e2ddd0;--ok:#2e7d4f}
 @media (prefers-color-scheme:dark){:root{--bg:#0e1730;--card:#17223f;--ink:#eef0f6;--mute:#9aa4bd;--line:#2a3860}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;padding-bottom:calc(88px + env(safe-area-inset-bottom))}
-header{background:var(--navy);color:#fff;padding:calc(14px + env(safe-area-inset-top)) 16px 12px;position:sticky;top:0;z-index:5}
-header h1{margin:0;font-size:17px}
-header small{color:#b9c4e0;font-size:12px}
-.steps{display:flex;gap:6px;margin-top:10px}
-.steps i{flex:1;height:4px;border-radius:2px;background:#33497a}
-.steps i.on{background:var(--amber)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;padding-bottom:calc(24px + env(safe-area-inset-bottom))}
+header{background:var(--navy);color:#fff;padding:calc(14px + env(safe-area-inset-top)) 16px 12px}
+header h1{margin:0;font-size:17px}header small{color:#b9c4e0;font-size:12px}
 main{padding:16px;max-width:640px;margin:auto}
-section{display:none}section.on{display:block}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
-h2{font-size:18px;margin:0 0 10px}
-label{display:block;font-size:13px;color:var(--mute);margin:12px 0 4px}
-input,select,textarea{width:100%;font:inherit;color:inherit;background:transparent;border:1px solid var(--line);border-radius:10px;padding:12px}
-textarea{min-height:240px;resize:vertical;line-height:1.55}
-button{font:inherit;border:0;border-radius:12px;padding:13px 16px;min-height:48px;background:var(--navy);color:#fff;font-weight:600}
-button.amber{background:var(--amber);color:var(--navy)}
-button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
-.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1}
-.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
-.chip{background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:13px}
-.check{display:flex;gap:8px;font-size:14px;padding:4px 0}
-.check b{flex:none;width:18px}.ok b{color:var(--ok)}.bad b{color:var(--warn)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.row{display:flex;align-items:center;gap:10px}
+.row .t{flex:1;min-width:0}
+.row b{display:block;font-size:13px;color:var(--mute);font-weight:500}
+.row span.v{display:block;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+button{font:inherit;border:0;border-radius:12px;padding:12px 16px;min-height:48px;background:var(--navy);color:#fff;font-weight:700}
+button.cp{flex:none;min-width:84px}
+button.done{background:var(--ok)}
+button.big{width:100%;background:var(--amber);color:var(--navy);font-size:17px;min-height:56px}
+button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);font-weight:500}
+ol{padding-left:20px;margin:6px 0;font-size:15px}
 .hint{font-size:13px;color:var(--mute)}
-pre.p{white-space:pre-wrap;background:var(--bg);border-radius:10px;padding:12px;font-size:13px;max-height:200px;overflow:auto}
-.copyrow{display:flex;align-items:center;gap:8px;margin:8px 0}
-.copyrow div{flex:1;min-width:0;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.copyrow button{flex:none;min-height:40px;padding:8px 14px}
-nav{position:fixed;left:0;right:0;bottom:0;display:flex;gap:8px;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:var(--card);border-top:1px solid var(--line)}
-nav button{flex:1}
-.thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.thumbs div{position:relative;width:72px;height:72px}.thumbs img{width:100%;height:100%;object-fit:cover;border-radius:10px;border:1px solid var(--line)}.thumbs b{position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;background:var(--navy);color:#fff;font-size:13px;line-height:22px;text-align:center}
-.chip.btn{cursor:pointer;padding:6px 12px}
-#toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#000c;color:#fff;padding:8px 16px;border-radius:999px;font-size:14px;opacity:0;transition:.2s;pointer-events:none}
+details summary{cursor:pointer;font-weight:600}
+.prev{font-size:15px;margin-top:8px}.prev table{border-collapse:collapse;width:100%;font-size:13px}.prev td,.prev th{border:1px solid var(--line);padding:4px 6px}.prev blockquote{margin:8px 0;padding:2px 12px;border-left:3px solid var(--amber);color:var(--mute)}
+input,textarea{width:100%;font:inherit;color:inherit;background:transparent;border:1px solid var(--line);border-radius:10px;padding:10px;margin:4px 0 8px}
+textarea{min-height:160px}
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#000c;color:#fff;padding:8px 16px;border-radius:999px;font-size:14px;opacity:0;transition:.2s;pointer-events:none}
 #toast.on{opacity:1}
-.prev{font-size:15px}.prev table{border-collapse:collapse;width:100%;font-size:13px}.prev td,.prev th{border:1px solid var(--line);padding:4px 6px}.prev blockquote{margin:8px 0;padding:4px 12px;border-left:3px solid var(--amber);color:var(--mute)}
 </style>
 </head>
 <body>
-<header><h1>연필 차장의 행복 계산 일지</h1><small>모바일 포스팅 · 비공개 초안용</small><div class="steps"><i></i><i></i><i></i></div></header>
+<header><h1>연필 차장의 행복 계산 일지</h1><small>네이버 블로그 비공개 초안 올리기</small></header>
 <main>
-<section id="s0">
- <div class="card"><h2>오늘의 주제 추천</h2>
-  <label>카테고리</label>
-  <select id="cat"></select>
-  <div class="hint" id="catHint"></div>
-  <div class="row" style="margin-top:10px"><button class="amber" onclick="copy(recPrompt(),'추천 요청문 복사됨')">Claude 추천 요청문 복사</button><button class="ghost" onclick="openClaude(recPrompt())">Claude 앱에서 추천받기</button></div>
-  <label>직접 검색해서 이슈 찾기</label>
-  <div class="row"><button class="ghost" onclick="searchNaver('m_news')">최근 뉴스</button><button class="ghost" onclick="searchNaver('m_blog')">인기 블로그글</button><button class="ghost" onclick="window.open('https://datalab.naver.com/','_blank')">데이터랩</button></div>
-  <label>주제 아이디어 (누르면 소재에 채워집니다)</label>
-  <div class="chips" id="ideas"></div>
- </div>
- <div class="card"><h2>1. 소재</h2>
-  <label>소재</label><input id="topic" placeholder="예: IRP 먼저 넣어야 할까">
-  <label>메모 (선택)</label><textarea id="memo" style="min-height:80px" placeholder="꼭 넣고 싶은 관점이나 숫자"></textarea>
- </div>
- <div class="card"><h2>참고 사진 (선택)</h2>
-  <p class="hint">영수증·화면 캡처 등 글에 참고할 사진입니다. 이 기기에만 저장됩니다. Claude 앱에는 '공유'로 보내세요.</p>
-  <input type="file" id="photoIn" accept="image/*" multiple hidden>
-  <div class="row"><button class="ghost" onclick="$('#photoIn').click()">사진 추가</button><button class="ghost" onclick="sharePhotos()">Claude 앱으로 공유</button></div>
-  <div class="thumbs" id="thumbs"></div>
- </div>
- <div class="card"><h2>Claude에게 글 맡기기</h2>
-  <p class="hint">아래 요청문을 복사해 폰의 Claude 앱에 붙여 넣으면 /블로그 스킬이 사실확인·본문·이미지까지 만듭니다. 사진은 공유로 함께 보내세요. 완성된 본문을 다음 단계에 붙여 넣으세요.</p>
-  <pre class="p" id="prompt"></pre>
-  <div class="row"><button class="amber" onclick="copy($('#prompt').textContent,'요청문 복사됨')">요청문 복사</button><button class="ghost" onclick="openClaude()">Claude 앱 열기</button></div>
- </div>
-</section>
-<section id="s1">
- <div class="card"><h2>2. 본문 붙여넣기</h2>
-  <label>제목</label><input id="title" placeholder="질문 + 답 암시형 (100자 이내)">
-  <label>본문 (마크다운)</label><textarea id="body" placeholder="Claude가 만든 본문을 붙여 넣으세요. 제목(#)은 빼도 됩니다."></textarea>
-  <div class="row" style="margin-top:8px"><button class="ghost" onclick="pasteBody()">클립보드에서 붙여넣기</button><button class="ghost" onclick="autoMeta()">제목·태그 자동 추출</button></div>
-  <label>태그 (10개, 쉼표 구분)</label><input id="tags" placeholder="IRP,연금저축,ISA,...">
-  <div class="chips" id="tagChips"></div>
- </div>
- <div class="card"><h2>발행 전 점검</h2><div id="checks"></div></div>
-</section>
-<section id="s2">
- <div class="card"><h2>3. 네이버 블로그 앱에 올리기</h2>
-  <p class="hint">공개 범위는 항상 <b>비공개</b>로 저장하세요. 확인 후 직접 공개로 바꿉니다.</p>
-  <div class="copyrow"><div id="cTitle"></div><button onclick="copy($('#title').value,'제목 복사됨')">제목</button></div>
-  <div class="copyrow"><div id="cBody"></div><button onclick="copyRich()">본문</button></div>
-  <div class="copyrow"><div id="cTags"></div><button onclick="copy(tagList().map(t=>'#'+t).join(' '),'태그 복사됨')">태그</button></div>
-  <button class="amber" style="width:100%;margin-top:8px" onclick="openNaver()">네이버 블로그 앱 열기</button>
-  <ol class="hint" style="padding-left:20px">
-   <li>앱에서 글쓰기 → 카테고리: <b id="catName"></b></li>
-   <li>제목·본문·태그를 차례로 붙여넣기 (본문은 서식 포함으로 복사됩니다)</li>
-   <li>이미지(썸네일, 비교, 판단 그래프)는 사진에서 직접 삽입</li>
-   <li>발행 설정 → <b>비공개</b> → 저장</li>
+<div id="empty" class="card" hidden>
+ <b>열린 글이 없습니다.</b>
+ <p class="hint">Claude 대화에서 받은 링크로 열어 주세요. 직접 올리려면 아래에 붙여넣습니다.</p>
+ <input id="mt" placeholder="제목"><textarea id="mb" placeholder="본문"></textarea><input id="mg" placeholder="태그 (쉼표로 구분)">
+ <button class="big" onclick="manual()">이 내용으로 열기</button>
+</div>
+<div id="post" hidden>
+ <div class="card"><div class="row"><div class="t"><b>제목</b><span class="v" id="vt"></span></div><button class="cp" data-k="t" onclick="cpTitle(this)">복사</button></div></div>
+ <div class="card"><div class="row"><div class="t"><b>본문 <span id="vl"></span></b><span class="v" id="vb"></span></div><button class="cp" data-k="b" onclick="cpBody(this)">복사</button></div>
+  <p class="hint" style="margin:8px 0 0">표·굵게 등 서식 포함으로 복사됩니다. 서식이 깨지면 <a href="#" onclick="cpPlain(event)">텍스트로 복사</a>를 쓰세요.</p></div>
+ <div class="card"><div class="row"><div class="t"><b>태그</b><span class="v" id="vg"></span></div><button class="cp" data-k="g" onclick="cpTags(this)">복사</button></div></div>
+ <button class="big" onclick="openNaver()">네이버 블로그 앱 열기</button>
+ <div class="card" style="margin-top:12px">
+  <ol>
+   <li>위에서 <b>제목</b>을 복사하고 앱 글쓰기에 붙여넣기</li>
+   <li><b>본문</b>을 복사해 본문에 붙여넣기</li>
+   <li>카테고리 <b id="vc"></b> 선택, <b>태그</b> 복사해 붙여넣기</li>
+   <li>발행 설정을 <b>비공개</b>로 하고 저장</li>
   </ol>
  </div>
- <div class="card"><h2>미리보기</h2><div class="prev" id="prev"></div></div>
- <button class="ghost" style="width:100%" onclick="reset()">새 글 시작 (임시저장 삭제)</button>
-</section>
+ <div class="card"><details><summary>본문 미리보기</summary><div class="prev" id="prev"></div></details></div>
+</div>
 </main>
-<nav><button class="ghost" id="back" onclick="go(-1)">이전</button><button id="next" onclick="go(1)">다음</button></nav>
 <div id="toast"></div>
 <script>
-const $=s=>document.querySelector(s);
-const CATS={"연금, 절세":"IRP·연금저축·ISA·세제","노후 계산":"은퇴·퇴직·국민연금·대출·가계 계산","아빠 육아휴직":"육아휴직 가계","캐나다 1년 살기":"해외 생활","아들과 축구":"유소년 축구 성장·비용 이야기"};
-const IDEAS={"연금, 절세":["IRP 먼저 넣어야 할까","연금저축 vs ISA, 어디부터","연말정산 세액공제 한도 점검","ISA 만기 후 연금계좌 이전"],"노후 계산":["국민연금 수령 시기, 당길까 늦출까","주담대 상환 vs 연금 납입","40대 외벌이 노후 월 생활비 계산","퇴직연금 DC 운용 점검"],"아빠 육아휴직":["육아휴직 급여, 월 얼마 받나","아빠 육아휴직 통보 순서","휴직 중 가계부 계산"],"캐나다 1년 살기":["해외 1년 살기 생활비 예산표","환율 변동에 따른 해외 체류 예산"],"아들과 축구":["유소년 축구 1년 비용 계산","축구 장비값 가계부","성장기 간식·영양 비용"]};
-const KEY='blogMobileDraft';let step=0;
+const $=s=>document.querySelector(s);let P=null;
 const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
-function save(){try{localStorage.setItem(KEY,JSON.stringify({topic:$('#topic').value,cat:$('#cat').value,memo:$('#memo').value,title:$('#title').value,body:$('#body').value,tags:$('#tags').value,step}))}catch(e){}}
-function load(){try{const d=JSON.parse(localStorage.getItem(KEY)||'{}');for(const k of['topic','memo','title','body','tags'])if(d[k])$('#'+k).value=d[k];if(d.cat)$('#cat').value=d.cat;step=d.step||0}catch(e){}}
-function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1600)}
-async function copy(t,m){try{await navigator.clipboard.writeText(t)}catch(e){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove()}toast(m||'복사됨')}
-function tagList(){return $('#tags').value.split(/[,\s#]+/).filter(Boolean).slice(0,10)}
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1500)}
 function inline(s){return esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\*(.+?)\*/g,'<i>$1</i>').replace(/\[([^\]]+)\]\((https?:[^)]+)\)/g,'<a href="$2">$1</a>')}
 function md(src){const L=src.replace(/\r/g,'').split('\n'),o=[];let i=0;
  while(i<L.length){const l=L[i];
@@ -125,62 +73,27 @@ function md(src){const L=src.replace(/\r/g,'').split('\n'),o=[];let i=0;
   let m;
   if(m=l.match(/^(#{1,4})\s+(.*)/)){const n=Math.min(m[1].length+1,4);o.push(`<h${n}>${inline(m[2])}</h${n}>`);i++}
   else if(/^---+\s*$/.test(l)){o.push('<hr>');i++}
-  else if(/^>/.test(l)){const b=[];while(i<L.length&&/^>/.test(L[i]))b.push(inline(L[i++].replace(/^>\s?/,'')));o.push(`<blockquote>${b.join('<br>')}</blockquote>`)}
+  else if(/^>/.test(l)){const b=[];let cur=[];while(i<L.length&&/^>/.test(L[i])){const t=L[i++].replace(/^>\s?/,'');if(t.trim()===''){if(cur.length)b.push(cur.join('<br>'));cur=[]}else cur.push(inline(t))}if(cur.length)b.push(cur.join('<br>'));o.push('<blockquote>'+b.map(x=>`<p>${x}</p>`).join('')+'</blockquote>')}
   else if(/^\|/.test(l)){const r=[];while(i<L.length&&/^\|/.test(L[i]))r.push(L[i++]);const rows=r.filter(x=>!/^\|[\s:|-]+\|?\s*$/.test(x)).map(x=>x.replace(/^\||\|\s*$/g,'').split('|').map(c=>c.trim()));
    o.push('<table>'+rows.map((c,k)=>'<tr>'+c.map(v=>`<${k?'td':'th'}>${inline(v)}</${k?'td':'th'}>`).join('')+'</tr>').join('')+'</table>')}
   else if(/^\s*([-*]|\d+\.)\s+/.test(l)){const ord=/^\s*\d+\./.test(l),b=[];while(i<L.length&&/^\s*([-*]|\d+\.)\s+/.test(L[i]))b.push(`<li>${inline(L[i++].replace(/^\s*([-*]|\d+\.)\s+/,''))}</li>`);o.push(`<${ord?'ol':'ul'}>${b.join('')}</${ord?'ol':'ul'}>`)}
   else{const p=[];while(i<L.length&&!/^\s*$/.test(L[i])&&!/^(#|>|\||---)/.test(L[i]))p.push(inline(L[i++]));o.push(`<p>${p.join('<br>')}</p>`)}}
  return o.join('')}
-function bodyText(){return $('#body').value.replace(/^#\s+.*\n+/,'')}
-async function copyRich(){const html=md(bodyText()),txt=bodyText();
- try{await navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([html],{type:'text/html'}),'text/plain':new Blob([txt],{type:'text/plain'})})]);toast('본문 복사됨 (서식 포함)')}catch(e){copy(txt,'본문 복사됨 (텍스트)')}}
-async function pasteBody(){try{$('#body').value=await navigator.clipboard.readText();onBody()}catch(e){toast('붙여넣기 권한이 없습니다. 직접 붙여 넣어 주세요')}}
-function autoMeta(){const b=$('#body').value,h=b.match(/^#\s+(.+)/m);if(h&&!$('#title').value)$('#title').value=h[1].trim();
- const t=b.match(/^(?:#+\s*)?태그[:\s]*\n?([^\n]+)/m);if(t&&!$('#tags').value)$('#tags').value=t[1].replace(/#/g,'').trim().split(/[\s,]+/).join(',');
- onBody();toast('추출 완료')}
-function checks(){const b=$('#body').value,t=$('#title').value,tg=tagList(),r=[];
- const add=(ok,m)=>r.push(`<div class="check ${ok?'ok':'bad'}"><b>${ok?'✓':'✗'}</b><span>${m}</span></div>`);
- add(t.length>0&&t.length<=100,`제목 ${t.length}자 (100자 이내)`);
- add(tg.length===10,`태그 ${tg.length}/10개`);
- add(b.length>0&&b.length<=30000,`본문 ${b.length.toLocaleString()}자 (3만 자 이내)`);
- add(/##\s*3줄 결론/.test(b),'3줄 결론 섹션');
- add(/##\s*FAQ/i.test(b)&&(b.match(/\*\*Q\./g)||[]).length>=5,'FAQ 5개 이상');
- add(/##\s*출처/.test(b),'출처 섹션');
- add(/개인 의견이며/.test(b),'고지문');
- add(!/- \[[ x]\]/.test(b),'체크박스 없음 (네이버에서 깨짐)');
- add(!/오늘은 .*알아보겠습니다|정리해 보겠습니다|여러분도 확인해보세요/.test(b),'금지 표현 없음');
- add(!/[\u{1F300}-\u{1FAFF}☀-➿]/u.test(b),'이모지 없음');
- $('#checks').innerHTML=r.join('')}
-function onBody(){checks();$('#tagChips').innerHTML=tagList().map(t=>`<span class="chip">#${esc(t)}</span>`).join('');save()}
-function buildPrompt(){renderIdeas();const t=$('#topic').value.trim(),c=$('#cat').value,m=$('#memo').value.trim();
- $('#prompt').textContent=`/블로그 ${t||'[소재]'} ${c}`+(m?`\n\n참고: ${m}`:'')+(photos.length?`\n\n참고 사진 ${photos.length}장을 함께 첨부했어. 글 근거로 참고해 줘.`:'')+`\n\n모바일에서 올릴 거라 업리카 업로드는 건너뛰고, 제목·본문(마크다운)·태그 10개·SEO 키워드를 한 번에 정리해서 줘.`;
- $('#catHint').textContent=CATS[c]?`글감: ${CATS[c]}`:'';save()}
-function recPrompt(){const c=$('#cat').value;return `/블로그 오늘의 주제 추천 ${c}\n\n업리카 list_channel_posts로 기존 글을 보고 겹치지 않게, 최근 이슈를 검색해서 오늘의 주제 1개 + 후보 2개를 추천해 줘. 각 주제에 검색자가 칠 만한 제목 예시와 '계산' 각도를 한 줄씩 붙여 줘. 글은 내가 고른 뒤에 써 줘.`}
-function openClaude(t){location.href='https://claude.ai/new?q='+encodeURIComponent(t||$('#prompt').textContent)}
-function searchNaver(w){const d=new Date(),k=($('#cat').value.split(/[,\s]+/)[0]||'')+' '+d.getFullYear()+'년 '+(d.getMonth()+1)+'월';window.open('https://m.search.naver.com/search.naver?where='+w+'&query='+encodeURIComponent(k),'_blank')}
-function renderIdeas(){const l=IDEAS[$('#cat').value]||[];$('#ideas').innerHTML=l.map((t,i)=>`<span class="chip btn" data-i="${i}">${esc(t)}</span>`).join('');$('#ideas').querySelectorAll('.chip').forEach(e=>e.onclick=()=>{$('#topic').value=l[e.dataset.i];buildPrompt();toast('소재에 채웠습니다')})}
-/* 참고 사진: IndexedDB에 축소본 저장 */
-let photos=[];
-const idb=()=>new Promise((res,rej)=>{const r=indexedDB.open('blogMobile',1);r.onupgradeneeded=()=>r.result.createObjectStore('photos',{keyPath:'id'});r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
-async function dbDo(mode,fn){try{const d=await idb();return await new Promise((res,rej)=>{const t=d.transaction('photos',mode),s=t.objectStore('photos'),r=fn(s);t.oncomplete=()=>res(r&&r.result);t.onerror=()=>rej(t.error)})}catch(e){return null}}
-function shrink(f){return new Promise(res=>{const im=new Image(),u=URL.createObjectURL(f);im.onload=()=>{const m=1280,k=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);c.toBlob(b=>res(b),'image/jpeg',.85)};im.onerror=()=>res(null);im.src=u})}
-async function loadPhotos(){photos=(await dbDo('readonly',s=>s.getAll()))||[];photos.sort((a,b)=>a.id-b.id);renderPhotos()}
-function renderPhotos(){buildPrompt();$('#thumbs').innerHTML=photos.map(p=>`<div><img src="${URL.createObjectURL(p.blob)}"><b data-id="${p.id}">×</b></div>`).join('');$('#thumbs').querySelectorAll('b').forEach(b=>b.onclick=async()=>{await dbDo('readwrite',s=>s.delete(+b.dataset.id));loadPhotos()})}
-async function addPhotos(files){for(const f of files){const b=await shrink(f);if(b)await dbDo('readwrite',s=>s.put({id:Date.now()+Math.random(),name:'ref'+(photos.length+1)+'.jpg',blob:b}))}loadPhotos()}
-async function sharePhotos(){if(!photos.length){toast('사진을 먼저 추가하세요');return}const fs=photos.map((p,i)=>new File([p.blob],'ref'+(i+1)+'.jpg',{type:'image/jpeg'}));
- if(navigator.canShare&&navigator.canShare({files:fs})){try{await navigator.share({files:fs,text:$('#prompt').textContent})}catch(e){}}else toast('이 브라우저는 사진 공유를 지원하지 않습니다. Claude 앱에서 직접 첨부하세요')}
-function openNaver(){const t=Date.now();location.href='naversearchapp://';location.href='naverblog://';setTimeout(()=>{if(Date.now()-t<2500)location.href='https://m.blog.naver.com/'},1200)}
-function view(){document.querySelectorAll('section').forEach((s,i)=>s.classList.toggle('on',i===step));
- document.querySelectorAll('.steps i').forEach((e,i)=>e.classList.toggle('on',i<=step));
- $('#back').style.display=step?'':'none';$('#next').style.display=step===2?'none':'';
- if(step===2){$('#cTitle').textContent=$('#title').value||'(제목 없음)';$('#cBody').textContent=bodyText().slice(0,60)+'…';$('#cTags').textContent=tagList().map(t=>'#'+t).join(' ');$('#catName').textContent=$('#cat').value;$('#prev').innerHTML=md(bodyText())}
- if(step===1)checks();save();scrollTo(0,0)}
-function go(d){if(step===1&&d>0&&!$('#body').value.trim()){toast('본문을 먼저 붙여 넣어 주세요');return}step=Math.max(0,Math.min(2,step+d));view()}
-function reset(){if(confirm('임시저장 내용을 지울까요?')){try{localStorage.removeItem(KEY)}catch(e){}location.reload()}}
-$('#cat').innerHTML=Object.keys(CATS).map(c=>`<option>${c}</option>`).join('');
-load();buildPrompt();loadPhotos();$('#photoIn').addEventListener('change',e=>{addPhotos([...e.target.files]);e.target.value=''});onBody();view();
-['topic','cat','memo'].forEach(i=>$('#'+i).addEventListener('input',buildPrompt));
-['title','body','tags'].forEach(i=>$('#'+i).addEventListener('input',onBody));
+async function copy(t){try{await navigator.clipboard.writeText(t)}catch(e){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove()}}
+function mark(b){b.classList.add('done');b.textContent='복사됨 ✓'}
+async function cpTitle(b){await copy(P.t);mark(b);toast('제목 복사됨')}
+async function cpTags(b){await copy(P.g.map(x=>'#'+x).join(' '));mark(b);toast('태그 복사됨')}
+async function cpBody(b){const html=md(P.b);
+ try{await navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([html],{type:'text/html'}),'text/plain':new Blob([P.b],{type:'text/plain'})})]);toast('본문 복사됨 (서식 포함)')}catch(e){await copy(P.b);toast('본문 복사됨 (텍스트)')}
+ mark(b)}
+async function cpPlain(e){e.preventDefault();await copy(P.b);mark(document.querySelector('[data-k=b]'));toast('본문 복사됨 (텍스트)')}
+function openNaver(){const fb=encodeURIComponent('https://m.blog.naver.com/');location.href='intent://#Intent;scheme=naverblog;package=com.nhn.android.blog;S.browser_fallback_url='+fb+';end'}
+function show(p){P=p;$('#empty').hidden=true;$('#post').hidden=false;$('#vt').textContent=p.t;$('#vb').textContent=p.b.replace(/\s+/g,' ').slice(0,50)+'…';$('#vl').textContent='('+p.b.length.toLocaleString()+'자)';$('#vg').textContent=p.g.map(x=>'#'+x).join(' ');$('#vc').textContent=p.c||'';$('#prev').innerHTML=md(p.b);document.title=p.t}
+function manual(){const t=$('#mt').value.trim(),b=$('#mb').value.trim();if(!t||!b){toast('제목과 본문을 넣어 주세요');return}show({t,b,g:$('#mg').value.split(/[,\s#]+/).filter(Boolean).slice(0,10),c:''})}
+async function inflate(b64){const s=atob(b64.replace(/-/g,'+').replace(/_/g,'/')),u=Uint8Array.from(s,c=>c.charCodeAt(0));const r=new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('deflate-raw')));return JSON.parse(await r.text())}
+(async()=>{const m=location.hash.match(/d=([A-Za-z0-9_-]+)/);
+ if(m){try{show(await inflate(m[1]));return}catch(e){toast('링크를 읽지 못했습니다')}}
+ $('#empty').hidden=false})();
 if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>
